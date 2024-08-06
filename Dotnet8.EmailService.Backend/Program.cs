@@ -1,14 +1,24 @@
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Mailgun.Core;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
+// Register Mailgun
+builder.Services.AddSingleton<IMailgunClient>(serviceProvider =>
+{
+    var configuration = serviceProvider.GetRequiredService<IConfiguration>();
+    var apiKey = configuration["Mailgun:ApiKey"];
+    var domain = configuration["Mailgun:Domain"];
+    return new MailgunClient(apiKey, domain);
+});
+
+// Add Swagger/OpenAPI support
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-var smtpSettings = builder.Configuration.GetSection("SmtpSettings").Get<SmtpSettings>();
 
 var app = builder.Build();
 
@@ -20,18 +30,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.Run();
-
-public class SmtpSettings
-{
-    public string Host { get; set; }
-    public int Port { get; set; }
-    public string User { get; set; }
-    public string Pass { get; set; }
-    public bool EnableSsl { get; set; }
-}
