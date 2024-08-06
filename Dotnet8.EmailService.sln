@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35103.136
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dotnet8.EmailService.Backend", "Dotnet8.EmailService.Backend\Dotnet8.EmailService.Backend.csproj", "{98A8E6A0-7BFA-4698-B9FD-65432817E28D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{98A8E6A0-7BFA-4698-B9FD-65432817E28D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{98A8E6A0-7BFA-4698-B9FD-65432817E28D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{98A8E6A0-7BFA-4698-B9FD-65432817E28D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{98A8E6A0-7BFA-4698-B9FD-65432817E28D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {12BD4031-6D51-4459-BEC3-78D9F561D52E}
+	EndGlobalSection
+EndGlobal
