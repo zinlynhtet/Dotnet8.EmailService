@@ -1,48 +1,34 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Mailgun.Core;
-using Mailgun.Messages;
-using System.Threading.Tasks;
+﻿using Dotnet8.EmailService.Backend.Models;
+using FluentEmail.Core;
+using Microsoft.AspNetCore.Mvc;
 
-namespace Dotnet8.EmailService.Backend.Features
+namespace Dotnet8.EmailService.Backend.Features;
+
+[Route("api/[controller]")]
+[ApiController]
+public partial class EmailController : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class EmailController : ControllerBase
+    private readonly IFluentEmail _fluentEmail;
+
+    public EmailController(IFluentEmail fluentEmail)
     {
-        private readonly IMailgunClient _mailgunClient;
-
-        public EmailController(IMailgunClient mailgunClient)
-        {
-            _mailgunClient = mailgunClient;
-        }
-
-        [HttpPost("send")]
-        public async Task<IActionResult> SendEmail(EmailRequestModel requestModel)
-        {
-            var message = new MailgunMessage
-            {
-                From = "from@example.com",
-                To = requestModel.MailTo,
-                Subject = requestModel.Subject,
-                Text = requestModel.Body,
-                Html = requestModel.Body
-            };
-
-            var response = await _mailgunClient.SendEmailAsync(message);
-
-            if (response.IsSuccessStatusCode)
-            {
-                return Ok(new { Message = "Email sent successfully" });
-            }
-
-            return StatusCode(500, new { Message = "Failed to send email" });
-        }
+        _fluentEmail = fluentEmail;
     }
 
-    public class EmailRequestModel
+    [HttpPost("send")]
+    public async Task<IActionResult> SendEmail(EmailRequestModel requestModel)
     {
-        public string MailTo { get; set; }
-        public string Subject { get; set; }
-        public string Body { get; set; }
+        var email = await _fluentEmail
+            .To(requestModel.MailTo)
+            .Subject(requestModel.Subject)
+            .Body(requestModel.Body)
+            .SendAsync();
+
+        if (email.Successful)
+        {
+            return Ok(MessageResponseModel.Ok);
+        }
+
+        return StatusCode(500, MessageResponseModel.Fail);
     }
 }

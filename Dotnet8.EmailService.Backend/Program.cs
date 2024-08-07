@@ -1,24 +1,22 @@
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Mailgun.Core;
+using System.Net.Mail;
+using System.Net;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-builder.Services.AddControllers();
-
-// Register Mailgun
-builder.Services.AddSingleton<IMailgunClient>(serviceProvider =>
-{
-    var configuration = serviceProvider.GetRequiredService<IConfiguration>();
-    var apiKey = configuration["Mailgun:ApiKey"];
-    var domain = configuration["Mailgun:Domain"];
-    return new MailgunClient(apiKey, domain);
-});
-
-// Add Swagger/OpenAPI support
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+var smtpSettings = builder.Configuration.GetSection("SmtpSettings").Get<SmtpSettings>();
+builder.Services
+           .AddFluentEmail(smtpSettings!.User)
+           .AddRazorRenderer()
+           .AddSmtpSender(new SmtpClient(smtpSettings.Host)
+           {
+               Port = smtpSettings.Port,
+               Credentials = new NetworkCredential(smtpSettings.User, smtpSettings.Pass),
+               EnableSsl = smtpSettings.EnableSsl
+           });
+
+builder.Services.AddControllers();
 
 var app = builder.Build();
 
@@ -30,6 +28,18 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
 app.UseAuthorization();
+
 app.MapControllers();
+
 app.Run();
+
+public class SmtpSettings
+{
+    public string Host { get; set; }
+    public int Port { get; set; }
+    public string User { get; set; }
+    public string Pass { get; set; }
+    public bool EnableSsl { get; set; }
+}
